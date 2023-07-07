@@ -28,57 +28,57 @@
 
   // https://stackoverflow.com/a/12554727
   function sandbox(code, locals) {
-      const params = []
-      const args = []
+    const params = []
+    const args = []
 
-      // create our own local versions of window and document with limited functionality
-      locals = Object.assign({window: {}, document: {}}, locals)
+    // create our own local versions of window and document with limited functionality
+    locals = Object.assign({window: {}, document: {}}, locals)
 
-      for (const [k, v] of Object.entries(locals)) {
-          params.push(k)
-          args.push(v)
-      }
+    for (const [k, v] of Object.entries(locals)) {
+      params.push(k)
+      args.push(v)
+    }
 
-      /* eslint @typescript-eslint/no-empty-function: 0 */
-      const AsyncFunction = async function () {}.constructor
-      const func = new AsyncFunction(...params.concat(code))
+    /* eslint @typescript-eslint/no-empty-function: 0 */
+    const AsyncFunction = async function () {}.constructor
+    const func = new AsyncFunction(...params.concat(code))
 
-      return func.apply(Object.create(null), args)
+    return func.apply(Object.create(null), args)
   }
 
   const formatTimestamp = ts => {
-      const formatter = new Intl.DateTimeFormat("en-US", {
-          dateStyle: "medium",
-          timeStyle: "short",
-      })
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })
 
-      return formatter.format(new Date(ts * 1000))
+    return formatter.format(new Date(ts * 1000))
   }
 
   const display = x => {
-      if (typeof x === "function") {
-          return "<function>"
-      }
+    if (typeof x === "function") {
+      return "<function>"
+    }
 
-      if (Array.isArray(x)) {
-          x = x.map(display)
-      }
+    if (Array.isArray(x)) {
+      x = x.map(display)
+    }
 
-      if (x && typeof x === "object") {
-          x = mapv(display, x)
-      }
+    if (x && typeof x === "object") {
+      x = mapv(display, x)
+    }
 
-      return JSON.stringify(x, null, 2)
+    return JSON.stringify(x, null, 2)
   }
 
   const cx = {
-      error: "rounded bg-red-500 text-white",
-      success: "rounded bg-green-500 text-white",
-      border: "border-solid border border-blue-100",
-      button: "rounded-full bg-blue-500 text-white",
-      button2: "border-solid border rounded-full",
-      button3: "border-solid border border-red-500 rounded-full",
-      padding: "py-2 px-3",
+    error: "rounded bg-red-500 text-white",
+    success: "rounded bg-green-500 text-white",
+    border: "border-solid border border-blue-100",
+    button: "rounded-full bg-blue-500 text-white",
+    button2: "border-solid border rounded-full",
+    button3: "border-solid border border-red-500 rounded-full",
+    padding: "py-2 px-3",
   }
 
   let ndk
@@ -88,144 +88,148 @@
   let mode = "editor"
 
   const showEditor = () => {
-      mode = "editor"
+    mode = "editor"
   }
 
   const showConsole = () => {
-      mode = "console"
-      testScript()
+    mode = "console"
+    testScript()
   }
 
   const login = async () => {
-      ndk = new NDK({
-          signer: new NDKNip07Signer(),
-          explicitRelayUrls: [
-              "wss://nos.lol",
-              "wss://nostr-pub.wellorder.net",
-              "wss://relay.nostr.band",
-          ],
-      })
+    ndk = new NDK({
+      signer: new NDKNip07Signer(),
+      explicitRelayUrls: [
+        "wss://nos.lol",
+        "wss://nostr-pub.wellorder.net",
+        "wss://relay.nostr.band",
+      ],
+    })
 
-      user = first(await Promise.all([
-          ndk.signer.user(),
-          ndk.connect(),
-      ]))
+    user = first(await Promise.all([
+      ndk.signer.user(),
+      ndk.connect(),
+    ]))
 
-      loadScripts()
+    loadScripts()
   }
 
   const loadScripts = async () => {
-      const allScripts = Array.from(await ndk.fetchEvents({
-          kinds: [37077],
-          authors: [user.hexpubkey()],
-          limit: 1000,
-      }))
+    const allScripts = Array.from(await ndk.fetchEvents({
+      kinds: [37077],
+      authors: [user.hexpubkey()],
+      limit: 1000,
+    }))
 
-      const deletions = Array.from(await ndk.fetchEvents({
-          kinds: [5],
-          authors: [user.hexpubkey()],
-          "#a": Array.from(allScripts).map(e => e.tagReference()[1]),
-      }))
+    const deletions = Array.from(await ndk.fetchEvents({
+      kinds: [5],
+      authors: [user.hexpubkey()],
+      "#a": Array.from(allScripts).map(e => e.tagReference()[1]),
+    }))
 
-      const deletedAddresses = new Set(deletions.map(e => e.tagValue("a")))
+    const deletedAddresses = new Set(deletions.map(e => e.tagValue("a")))
 
-      scripts = allScripts.filter(e => !deletedAddresses.has(e.tagReference()[1]))
+    scripts = allScripts.filter(e => !deletedAddresses.has(e.tagReference()[1]))
   }
 
   const newScript = () => {
-      script = {
-          name: "My Script",
-          content: defaultScript,
-          description: "A simple nostr script",
-          result: null,
-          error: null,
-          test: defaultTest,
-      }
+    script = {
+      name: "My Script",
+      content: defaultScript,
+      description: "A simple nostr script",
+      result: null,
+      error: null,
+      test: defaultTest,
+    }
 
-      validateScript()
+    validateScript()
   }
 
   const buildScript = async () => {
-      let result
-      try {
-          result = buildOstrichScript(script.content)
-      } catch (e) {
-          return [null, e.toString()]
-      }
+    let result
+    try {
+      result = buildOstrichScript(script.content)
+    } catch (e) {
+      return [null, e.toString()]
+    }
 
-      if (!script.name) {
-          return [null, "No script name provided"]
-      }
+    if (!script.name) {
+      return [null, "No script name provided"]
+    }
 
-      return [result, null]
+    return [result, null]
   }
 
   const validateScript = async () => {
-      const [result, error] = await buildScript()
+    const [result, error] = await buildScript()
 
-      script.result = result
-      script.error = error
+    script.result = result
+    script.error = error
 
-      return Boolean(error)
+    return Boolean(error)
   }
 
   const testScript = async () => {
-      script.testResult = null
-      script.testError = null
-      try {
-          script.testResult = await sandbox(script.test, {
-              ndk,
-              user,
-              NDKEvent,
-              myScript: script.result,
-          })
-      } catch (e) {
-          script.testError = e.toString()
-      }
+    script.testResult = null
+    script.testError = null
+    try {
+      script.testResult = await sandbox(script.test, {
+        ndk,
+        user,
+        NDKEvent,
+        myScript: script.result,
+      })
+    } catch (e) {
+      script.testError = e.toString()
+    }
   }
 
   const publishScript = async () => {
-      if (!validateScript()) {
-          return
-      }
+    if (!validateScript()) {
+      return
+    }
 
-      const event = new NDKEvent(ndk, {
-          kind: 37077,
-          content: script.content,
-          tags: [
-              ["d", script.name],
-              ["description", script.description],
-          ],
-      })
+    const event = new NDKEvent(ndk, {
+      kind: 37077,
+      content: script.content,
+      tags: [
+        ["d", script.name],
+        ["description", script.description],
+      ],
+    })
 
-      await event.publish()
-      await loadScripts()
+    await event.publish()
+    await loadScripts()
 
-      script = null
+    script = null
   }
 
   const editScript = async e => {
-      script = {
-          event: e,
-          content: e.content,
-          name: e.tagValue("d"),
-          description: e.tagValue("description"),
-      }
+    script = {
+      event: e,
+      content: e.content,
+      name: e.tagValue("d"),
+      description: e.tagValue("description"),
+      result: null,
+      error: null,
+      test: defaultTest,
+    }
 
-      validateScript()
+    validateScript()
   }
 
   const clearScript = async () => {
-      script = null
+    mode = "editor"
+    script = null
   }
 
   const deleteScript = async () => {
-      if (confirm("Are you sure you want to delete this script?")) {
-          await script.event.delete()
-          await loadScripts()
+    if (confirm("Are you sure you want to delete this script?")) {
+      await script.event.delete()
+      await loadScripts()
 
-          script = null
-      }
+      script = null
+    }
   }
 </script>
 
@@ -291,7 +295,8 @@
           <h2 class="text-xl font-bold">Your scripts</h2>
           <button on:click={newScript} class={`${cx.button} ${cx.padding}`}>Add Script</button>
         </div>
-        <div class="flex flex-col gap-3 my-2">
+        <div class="h-px bg-blue-100 my-4" />
+        <div class="flex flex-col gap-3">
           {#each scripts as e}
             <div class="flex items-center justify-between">
               <div class="flex gap-3">
