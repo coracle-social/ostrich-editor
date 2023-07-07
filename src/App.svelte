@@ -265,10 +265,6 @@
             {#if script.error || isNil(script.result)}
               <pre class={`${cx.error} ${cx.padding}`}>{script.error || "No value returned"}</pre>
             {/if}
-            <div class="text-gray-700">
-              OstrichScript uses the lua programming language to extend nostr clients. Read more about it
-              <a href="https://github.com/coracle-social/ostrich-script" class="underline" target="_blank">here</a>.
-            </div>
           {:else}
             <textarea
               rows="16"
@@ -315,4 +311,8 @@
       </div>
     {/if}
   </div>
+  <small class="text-gray-400 text-center -mt-2">
+    OstrichScript uses the lua programming language to extend nostr clients. Read more about it
+    <a href="https://github.com/coracle-social/ostrich-script-js" class="underline" target="_blank">here</a>.
+  </small>
 </div>
