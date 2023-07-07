@@ -140,7 +140,11 @@
   const login = async () => {
     ndk = new NDK({
       signer: new NDKNip07Signer(),
-      explicitRelayUrls: ["wss://relay.damus.io", "wss://nos.lol"],
+      explicitRelayUrls: [
+        "wss://nos.lol",
+        "wss://nostr-pub.wellorder.net",
+        "wss://relay.nostr.band",
+      ],
     })
 
     user = first(await Promise.all([
@@ -269,7 +273,7 @@
 </script>
 
 <div class="p-8 m-auto flex flex-col gap-4 sm:w-3/4">
-  <h1 class="text-2xl">NostrScript Editor</h1>
+  <h1 class="text-2xl">OstrichScript Editor</h1>
   <div class={`${cx.border} rounded-2xl p-8 flex-grow flex flex-col gap-2`}>
     {#if user}
       {#if script}
@@ -305,8 +309,8 @@
               <pre class={`${cx.error} ${cx.padding}`}>{script.error || "No value returned"}</pre>
             {/if}
             <div class="text-gray-700">
-              NostrScript uses the lua programming language. Read more about NostrScript
-              <a href="https://github.com/coracle-social/nostrscript" class="underline" target="_blank">here</a>.
+              OstrichScript uses the lua programming language to extend nostr clients. Read more about it
+              <a href="https://github.com/coracle-social/ostrich-script" class="underline" target="_blank">here</a>.
             </div>
           {:else}
             <textarea

@@ -1,50 +1,28 @@
-> Default dev port is now `5173`, it now uses Vite under the hood.
-# Svelte v4 + TS + Tailwind 3.3 app
+# Ostrich Editor
 
-**NOTE** Dark mode stopped working with the Rollup based template, and since it isn't supported anymore, I've switched this to the Vite based template.
+OstrichScript is a convention for extending nostr clients with user-defined functionality.
+Ostrich Editor allows you to write, edit, publish, and delete these extensions.
 
-This is a project template for [Svelte](https://svelte.dev) (v4) apps. It lives at https://github.com/colinbate/svelte-ts-tailwind-template and is based on the official Svelte template via `create-vite` with TypeScript selected and Tailwind CSS added via `svelte-add`. The dependencies were then updated to latest (as of the latest commit). It is getting pretty easy to get this stack working without this template, but may save you a bit of time.
+Extensions are written in lua so that they are easy to write, and easy to sandbox in any client.
+This editor uses [https://github.com/teoxoy/lua-in-js](lua-in-js) to compile and run scripts.
+This particular implementation is very minimal, and is not a complete lua implementation, so
+anything you write here should run anywhere.
 
-> Note that this isn't a SvelteKit app, this is a vanilla Svelte template with the above mentioned technologies pre-installed. Now that SvelteKit is past 1.0, it is an option you may want to consider for any larger apps.
+You can learn lua by following along with [programming in lua](https://www.lua.org/pil/contents.html).
 
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
+You can read more about OstrichScript [here](https://github.com/coracle-social/ostrich-script-js).
 
-```bash
-npx degit colinbate/svelte-ts-tailwind-template svelte-app
-cd svelte-app
-```
+# Using the Editor
 
-Alternatively, if you are currently on GitHub, you can click the "Use this template" button at the top of this page.
+First, sign in using a NIP 07 extension. The editor will automatically query your kind 37077
+events and show them in a list. From there, you can either edit existing scripts, or create a
+new one using the button at the top.
 
-*Note that you will need to have [Node.js](https://nodejs.org) >=16 installed.*
+When you're editing a script, there are two modes: editor and console.
 
-## Get started
+Editor mode allows you to edit your script, including a title and description. As you work on your
+script, Ostrich Editor will continuously compile it for you and show you any errors below.
 
-Install the dependencies...
-
-```bash
-cd svelte-app
-npm install
-```
-
-...then start [Vite](https://vitejs.dev/):
-
-```bash
-npm run dev
-```
-
-Navigate to [localhost:5173](http://localhost:5173). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
-
-By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
-
-## Building and running in production mode
-
-To create an optimised version of the app:
-
-```bash
-npm run build
-```
-
-You can serve up the newly built app with `npm run preview`. This allows you to ensure nothing was damaged in the production build process.
-
-You can then host the app with whichever static host you prefer.
+When you're ready to test your script, you can switch to console mode, where you can write a script
+in javascript using Ostrich Editor's own ndk and user. The return value of your script will be available
+as `myScript`.
